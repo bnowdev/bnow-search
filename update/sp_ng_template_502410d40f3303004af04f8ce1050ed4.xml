@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_ng_template">
+    <sp_ng_template action="INSERT_OR_UPDATE">
+        <id>searchTemplate.html</id>
+        <sp_widget display_value="BNOW Search">88f21c140f3303004af04f8ce1050e6b</sp_widget>
+        <sys_class_name>sp_ng_template</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-01-17 08:17:11</sys_created_on>
+        <sys_id>502410d40f3303004af04f8ce1050ed4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>searchTemplate.html</sys_name>
+        <sys_package display_value="Service Portal Search Widget" source="x_18587_sp_search">a85294140f3303004af04f8ce1050eb9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Service Portal Search Widget">a85294140f3303004af04f8ce1050eb9</sys_scope>
+        <sys_update_name>sp_ng_template_502410d40f3303004af04f8ce1050ed4</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-01-17 08:17:11</sys_updated_on>
+        <template><![CDATA[<ul ng-show="isOpen() && !moveInProgress" class="dropdown-menu" ng-style="{top: position().top+'px', left: position().left+'px'}" style="background:white;" role="listbox" aria-hidden="{{!isOpen()}}">
+  <li role='option' aria-hidden='true' style='display: none'></li>
+  <li ng-repeat="match in matches track by $index">
+    <ul>
+      <div ng-if="match.model.first" style="padding:10px 20px;font-weight:700;border-top:1px solid #efefef">{{match.model.first}}</div>
+      <li class="bn-match" style="display:block;margin:0 auto;"  ng-class="{active: isActive($index) }" 
+          ng-mouseenter="selectActive($index)" 
+          ng-click="selectMatch($index, $event)" 
+          role="option" id="{{::match.id}}">
+        <div ng-class="{'bn-match': true}" uib-typeahead-match index="$index" match="match" query="query" template-url="templateUrl" style="padding:10px 20px"></div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+]]></template>
+    </sp_ng_template>
+</record_update>
