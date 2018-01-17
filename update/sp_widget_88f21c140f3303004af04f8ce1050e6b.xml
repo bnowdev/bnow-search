@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope, $filter, $location, spAriaUtil, $window) {
+	var c = this;
+	c.options.title = c.options.title || 'Welcome';
+	c.options.short_description = c.options.short_description || 'Search for';
+	c.options.highlight = c.options.highlight || 'services';
+	
+	c.onSelect = function($item, $model, $label) {
+		if ($item.target) window.open($item.url, $item.target);
+		else $location.url($item.url);
+	};
+	c.getResults = function(query) {
+		return c.server.get({
+			q: query
+		}).then(function(response) {
+			var a = $filter('orderBy')(response.data.results, '-type');
+			var resultCount = $filter('limitTo')(a, c.data.limit).length;
+			spAriaUtil.sendLiveMessage(parseInt(resultCount) + " " + c.data.resultMsg + " " + c.data.navigationMsg + getNavigationKeys());
+			return $filter('limitTo')(a, c.data.limit);
+		});
+	}
+	c.submitSearch = function() {
+		if (c.selectedState) $location.search({
+			id: 'search',
+			t: c.data.searchType,
+			q: c.selectedState
+		});
+	}
+
+	function getNavigationKeys() {
+		if ($window.navigator.userAgent.indexOf("Mac OS X") > -1) return '⌘';
+		return 'Control';
+	}
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>#homepage-search {&#13;
+  margin:0 auto;&#13;
+  padding: 20px 15px;&#13;
+  width: auto;&#13;
+  max-width: 480px;&#13;
+} @media (min-width:992px) {&#13;
+  #homepage-search {&#13;
+    margin:0 auto;&#13;
+    padding: 40px 60px;&#13;
+    width: 600px;&#13;
+    max-width: none;&#13;
+  }&#13;
+}&#13;
+.highlight {&#13;
+  color: #ffdb66;&#13;
+}&#13;
+.sp-tagline-color {&#13;
+  color: $dropdown-bg;&#13;
+  text-shadow: 0px 2px 2px #83888a;&#13;
+}&#13;
+.active {&#13;
+  color: $dropdown-bg;&#13;
+  background-color: $navbar-inverse-bg;&#13;
+}&#13;
+.bn-match &gt; a {&#13;
+  display: block;&#13;
+  padding: 6px 20px;&#13;
+  border-top: 1px solid #efefef;&#13;
+  color: #08C;&#13;
+  text-decoration: none;&#13;
+}&#13;
+.bn-match.active &gt; a {&#13;
+  color: $dropdown-bg;&#13;
+}&#13;
+&#13;
+h1 {&#13;
+  font-size:28px;&#13;
+  font-weight:300;&#13;
+  margin-top:10px;&#13;
+} @media(min-width: 992px) {&#13;
+  h1 {&#13;
+    font-size:48px;&#13;
+  }&#13;
+}&#13;
+h6 {&#13;
+  font-size:12px;&#13;
+  text-transform: uppercase;&#13;
+  color: #222;&#13;
+  letter-spacing: 0.1em;&#13;
+} @media(min-width: 992px) {&#13;
+  h6 {&#13;
+    font-size:16px;&#13;
+  }&#13;
+}&#13;
+input {&#13;
+  width: 100%;&#13;
+  height: 48px;&#13;
+  min-width: auto;&#13;
+  padding: 0.825rem 1.475rem 0.825rem;&#13;
+  line-height: 18px;&#13;
+  background-color: #f4f4f4;&#13;
+  font-size: 1.2rem;&#13;
+  margin: 0;&#13;
+  border: .1625rem solid #dfe3e6;&#13;
+  border-radius: .675rem;&#13;
+  color: $gray-dark;&#13;
+  position: relative;&#13;
+  -webkit-transition: opacity .4s ease-in-out;&#13;
+  transition: opacity .4s ease-in-out;&#13;
+  -webkit-transition: all .2s ease-in-out;&#13;
+  transition: all .2s ease-in-out;&#13;
+  -webkit-appearance: none;&#13;
+  -moz-appearance: none;&#13;
+  -o-appearance: none;&#13;
+  box-sizing: border-box;&#13;
+} @media (min-width: 992px) {&#13;
+  input {&#13;
+    width:100%;&#13;
+    height: 66px;&#13;
+    min-width: 440px;&#13;
+    padding: 1.125rem 2.1875rem 1.125rem;&#13;
+    font-size: 1.6rem;&#13;
+  }&#13;
+}&#13;
+ul {&#13;
+  margin: 0;&#13;
+  padding: 0;&#13;
+  border: 0;&#13;
+  font-size: 100%;&#13;
+  font: inherit;&#13;
+  vertical-align: baseline;&#13;
+  list-style:none;&#13;
+}&#13;
+ul.dropdown-menu {&#13;
+  border-radius: 0px 0px 4px 4px;&#13;
+  font-size:10px;&#13;
+} @media(min-width: 992px) {&#13;
+  ul.dropdown-menu {&#13;
+    font-size:16px;&#13;
+  }&#13;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>title,short_description</field_list>
+        <has_preview>false</has_preview>
+        <id>bnow-search</id>
+        <internal>false</internal>
+        <link/>
+        <name>BNOW Search</name>
+        <option_schema>[{"name":"highlight","label":"Highlighted text","type":"string"}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	data.results = [];
+	data.searchMsg = gs.getMessage("Search");
+	
+	if (!input && gs.isLoggedIn())
+		return;
+
+	var articles = getKnowledge(input.q);
+	var items = getCatalogItems(input.q);
+	data.results = articles.concat(items);
+	
+})();
+
+function getKnowledge(searchTerm) {
+
+	var articles = [];
+
+	var kb = new GlideRecordSecure('kb_knowledge');
+	kb.addQuery('workflow_state', 'published');
+	kb.addQuery('IR_AND_OR_QUERY', searchTerm);
+	kb.orderByDesc('ir_query_score');
+	kb.setLimit(5);
+	kb.query();
+	while (kb.next()) {
+		if (!$sp.canReadRecord(kb))
+			continue;
+
+		var article = {};
+		article.type = "kb";
+		$sp.getRecordDisplayValues(article, kb, 'sys_id,number,short_description,published,text');
+
+		if (!article.text)
+			article.text = "";
+
+		article.text = $sp.stripHTML(article.text);
+		article.text = article.text.substring(0,200);
+		article.label = article.short_description;
+		article.score = parseInt(kb.ir_query_score.getDisplayValue());
+		article.url = '?id=kb_article&sys_id=' + kb.getUniqueValue();
+
+		if(articles.length == 0)
+			article.first = 'Guidelines';
+
+		articles.push(article);
+	}
+
+	return articles;
+}
+function getCatalogItems(searchTerm) {
+
+	var items = [];
+
+	var sc = new GlideRecord('sc_cat_item');
+	sc.addQuery('IR_AND_OR_QUERY', searchTerm);
+	sc.addQuery('sc_catalogs', $sp.getValue('sc_catalog'));
+	sc.addEncodedQuery('active=true^type!=bundle^sys_class_name!=sc_cat_item_guide^type!=package^sys_class_name!=sc_cat_item_content');
+	sc.orderByDesc('ir_query_score');
+	sc.setLimit(5);
+	sc.query();
+
+
+	while (sc.next()) {
+		if (!$sp.canReadRecord(sc))
+			continue;
+
+		var item = {};
+		if (sc.getRecordClassName() == "sc_cat_item_guide")
+			item.type = "sc_guide";
+		else if (sc.getRecordClassName() == "sc_cat_item_content") {
+			var gr = new GlideRecord('sc_cat_item_content');
+			gr.get(sc.getUniqueValue());
+			$sp.getRecordValues(item, gr, 'url, content_type, kb_article');
+			item.type = "sc_content";
+		} else
+			item.type = "sc";
+
+		$sp.getRecordDisplayValues(item, sc, 'name,short_description,category,picture,price,sys_id');
+		item.score = parseInt(sc.ir_query_score.getDisplayValue());
+		item.label = item.name;
+		item.category = sc.getValue('category');
+		item.url = '?id=sc_cat_item&sys_id=' + sc.getUniqueValue();
+		
+		if(items.length == 0)
+			item.first = 'Bestil / Request';
+
+		items.push(item);
+	}
+	return items;
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2018-01-17 08:10:31</sys_created_on>
+        <sys_id>88f21c140f3303004af04f8ce1050e6b</sys_id>
+        <sys_mod_count>33</sys_mod_count>
+        <sys_name>BNOW Search</sys_name>
+        <sys_package display_value="Service Portal Search Widget" source="x_18587_sp_search">a85294140f3303004af04f8ce1050eb9</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Service Portal Search Widget">a85294140f3303004af04f8ce1050eb9</sys_scope>
+        <sys_update_name>sp_widget_88f21c140f3303004af04f8ce1050e6b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2018-01-17 09:26:34</sys_updated_on>
+        <template><![CDATA[<div id="homepage-search">
+  <h6 class="text-center m-n sp-tagline-color">{{::c.options.title}} {{::user.name}}</h6>
+  <h1 class="text-center sp-tagline-color">{{::c.options.short_description}} <span class="highlight">{{::c.options.highlight}}</span></h1>
+  
+  <input type="text" placeholder="{{::c.data.searchMsg}}"
+         ng-focus="searchWidget=true"
+         ng-blur="searchWidget=false"
+         ng-model="c.selectedState"
+         ng-model-options="{debounce: 250}"
+         uib-typeahead="item as item.label for item in c.getResults($viewValue)"
+         typeahead-focus-first="true"
+         typeahead-on-select="c.onSelect($item, $model, $label)"
+         typeahead-popup-template-url="searchTemplate.html"
+         aria-autocomplete="list" 
+         aria-expanded="false" 
+         aria-owns="typeahead-151-3913" />
+</div>]]></template>
+    </sp_widget>
+</record_update>
