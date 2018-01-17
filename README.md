@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Generated files
 2
 This repository contains generated files and a checksum.
@@ -35,6 +34,3 @@ If you find yourself unable to import your repository due to the presence of fil
   5. Run `git commit`
 20
   6. Run `git push`
-=======
-# bnow-search
->>>>>>> parent of 6d31de7... First commit
